@@ -1,8 +1,8 @@
-# AirBnB Clone
+# AirBnB Clone ✨
 
 This is a command-line interface (CLI) application that replicates some of the core functionalities of the AirBnB website. It allows users to manage and interact with property listings, bookings, and user accounts. The application is built using Python and follows the Model-View-Controller (MVC) design pattern.
 
-## Command Interpreter
+## Command Interpreter 🖥
 
 The command interpreter is the main component of the AirBnB clone. It provides a command-line interface for interacting with the application. To start the command interpreter, follow these steps:
 
@@ -37,3 +37,8 @@ b6a6e15c-c67d-4312-9a75-9d084935e579
 
 (hbnb) all User
 ["[User] (b6a6e15c-c67d-4312-9a75-9d084935e579) {'id': 'b6a6e15c-c67d-4312-9a75-9d084935e579', 'created_at': '2024-03-05T10:30:00.123450', 'updated_at': '2024-03-05T10:30:00.123567', 'name': 'John Doe'}"]
+
+
+##AUTHORS 👨‍💻
+
+- Juman Hassan <jumanhassan47@gmail.com>
