@@ -25,11 +25,11 @@ For a complete list of available commands and their usage, you can use the `help
 Here are some examples of commands and their expected output:
 
 `(hbnb) create User
-b6a6e15c-c67d-4312-9a75-9d084935e579`
+b6a6e15c-c67d-4312-9a75-9d084935e579
 
-`(hbnb) show User b6a6e15c-c67d-4312-9a75-9d084935e579
+(hbnb) show User b6a6e15c-c67d-4312-9a75-9d084935e579
 [User] (b6a6e15c-c67d-4312-9a75-9d084935e579) {'id': 'b6a6e15c-c67d-4312-9a75-9d084935e579', 'created_at': '2024-03-05T10:30:00.123450', 'updated_at': '2024-03-05T10:30:00.123567'}
-`
+
 (hbnb) update User b6a6e15c-c67d-4312-9a75-9d084935e579 name "John Doe"
 
 (hbnb) show User b6a6e15c-c67d-4312-9a75-9d084935e579
