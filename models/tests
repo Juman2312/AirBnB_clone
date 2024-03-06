@@ -3,7 +3,7 @@ from datetime import datetime
 import uuid
 from base_model import BaseModel
 
-class BaseModelTestCase(unittest.TestCase):
+class TestBaseModelInit(unittest.TestCase):
     def setUp(self):
         self.base_model = BaseModel()
 
@@ -13,11 +13,21 @@ class BaseModelTestCase(unittest.TestCase):
         self.assertIsInstance(self.base_model.updated_at, datetime)
         self.assertEqual(self.base_model.created_at, self.base_model.updated_at)
 
+
+class TestBaseModelSave(unittest.TestCase):
+    def setUp(self):
+        self.base_model = BaseModel()
+
     def test_save(self):
         old_updated_at = self.base_model.updated_at
         self.base_model.save()
         new_updated_at = self.base_model.updated_at
         self.assertEqual(old_updated_at, new_updated_at)
+
+
+class TestBaseModelToDict(unittest.TestCase):
+    def setUp(self):
+        self.base_model = BaseModel()
 
     def test_to_dict(self):
         self.base_model.my_number = 123
@@ -32,9 +42,15 @@ class BaseModelTestCase(unittest.TestCase):
         self.assertEqual(obj_dict["id"], self.base_model.id)
         self.assertEqual(obj_dict["created_at"], self.base_model.created_at.isoformat())
 
+
+class TestBaseModelStr(unittest.TestCase):
+    def setUp(self):
+        self.base_model = BaseModel()
+
     def test_str(self):
         expected_string = f"[BaseModel] ({self.base_model.id}) {self.base_model.__dict__}"
         self.assertEqual(str(self.base_model), expected_string)
+
 
 if __name__ == '__main__':
     unittest.main()
