@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime
 import uuid
-from base_model import BaseModel
+from models.base_model import BaseModel
 
 class TestBaseModelInit(unittest.TestCase):
     def setUp(self):
