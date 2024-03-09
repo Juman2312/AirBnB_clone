@@ -1,23 +1,25 @@
 import uuid
 from datetime import datetime
+from models import storage
 
 class BaseModel:
     def __init__(self, *args, **kwargs):
+        """Add a call to the method new(self) on storage"""
         if kwargs:
-            for key, value in kwargs.items():
-                if key == '__class__':
-                    continue
-                elif key == 'created_at' or key == 'updated_at':
-                    setattr(self, key, datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f'))
-                else:
-                    setattr(self, key, value)
+            del kwargs['__class__']
+            kwargs['created_at'] = datetime.strptime(kwargs['created_at'], "%Y-%m-%dT%H:%M:%S.%f")
+            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'], "%Y-%m-%dT%H:%M:%S.%f")
+            super().__init__(*args, **kwargs)
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
-            self.updated_at = self.created_at
+            self.updated_at = datetime.now()
+            storage.new(self)
 
     def save(self):
+        """Call save() method of storage"""
         self.updated_at = datetime.now()
+        storage.save()
 
     def to_dict(self):
         obj_dict = {
