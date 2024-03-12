@@ -125,11 +125,11 @@ class HBNBCommand(cmd.Cmd):
         else:
             print("** class doesn't exist **")
 
-    def do_quit(self, arg):
+    def quit(self, arg):
         """Quit the console"""
         return True
 
-    def do_EOF(self, arg):
+    def EOF(self, arg):
         """Quit the console using EOF (Ctrl+D)"""
         print()
         return True
