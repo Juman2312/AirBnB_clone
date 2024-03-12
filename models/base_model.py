@@ -1,9 +1,16 @@
 #!/usr/bin/python3
+
+"""
+This file defines  the BaseModel class which will
+serve as the base of ou model.
+"""
 import uuid
 from datetime import datetime
 from models import storage
 
 class BaseModel:
+    """Base class for all our classes"""
+
     def __init__(self, *args, **kwargs):
         """Add a call to the method new(self) on storage"""
         if kwargs:
