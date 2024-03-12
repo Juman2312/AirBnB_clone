@@ -17,6 +17,10 @@ from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
+    """Defines the HolbertonBnB command interpreter.
+    Attributes:
+        prompt (str): The command prompt.
+    """
     prompt = "(hbnb) "
     valid_classes = ['BaseModel', 'User', 'State', 'City', 'Amenity', 'Place', 'Review']
 
