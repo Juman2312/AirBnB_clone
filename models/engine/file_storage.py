@@ -14,9 +14,9 @@ class FileStorage:
         This is  will serve as an Object relation mappingto interface or database
     """
 
-    """class private varaibles"""
-    __file_path: str = "file.json"
-    __objects: dict = {}
+    def __init__(self, file_path="C:\Users\Dedo-PC\Desktop\AirBnB_clone\models\engine\file_storage.py"):
+        self.file_path = file_path
+        self.__objects = {}
 
     def all(self):
         """Returns the dictionary __objects"""
@@ -32,17 +32,22 @@ class FileStorage:
         json_dict = {}
         for key, obj in self.__objects.items():
             json_dict[key] = obj.to_dict()
-        with open(self.__file_path, 'w') as file:
-            json.dump(json_dict, file)
+        try:
+            with open(self.file_path, 'w') as file:
+                json.dump(json_dict, file)
+        except IOError:
+            print(f"Error: Unable to write to file {self.file_path}")
 
     def reload(self):
         """Deserializes the JSON file to __objects"""
         try:
-            with open(self.__file_path, 'r') as file:
+            with open(self.file_path, 'r') as file:
                 json_dict = json.load(file)
                 for key, value in json_dict.items():
                     class_name, obj_id = key.split('.')
                     class_ = eval(class_name)
                     self.__objects[key] = class_(**value)
         except FileNotFoundError:
-            pass
+            print(f"Error: File {self.file_path} not found")
+        except (json.JSONDecodeError, ValueError):
+            print(f"Error: Invalid JSON in file {self.file_path}")

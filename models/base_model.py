@@ -11,8 +11,9 @@ from models import storage
 class BaseModel:
     """Base class for all our classes"""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, my_number, *args, **kwargs):
         """Add a call to the method new(self) on storage"""
+        self.my_number = my_number
         if kwargs:
             del kwargs['__class__']
             kwargs['created_at'] = datetime.strptime(kwargs['created_at'], "%Y-%m-%dT%H:%M:%S.%f")
