@@ -7,6 +7,14 @@ It will use JSON format to either serialize and deserialize objects
 """
 
 import json
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.place import Place
+from models.amenity import Amenity
+from models.review import Review
+
 
 
 class FileStorage:
@@ -44,3 +52,25 @@ class FileStorage:
                     self.__objects[key] = obj
         except FileNotFoundError:
             pass
+
+def _deserialize(self, obj):
+        """Deserialize JSON string to object"""
+        if '__class__' in obj:
+            class_name = obj['__class__']
+            del obj['__class__']
+            if class_name == 'User':
+                return User(**obj)
+            elif class_name == 'BaseModel':
+                return BaseModel(**obj)
+            elif class_name == 'State':
+                return State(**obj)
+            elif class_name == 'City':
+                return City(**obj)
+            elif class_name == 'Amenity':
+                return Amenity(**obj)
+            elif class_name == 'Place':
+                return Place(**obj)
+            elif class_name == 'Review':
+                return Review(**obj)
+
+        return obj

@@ -8,11 +8,17 @@ import cmd
 from models import storage
 from models.base_model import BaseModel
 from models.user import User
+from models.state import State
+from models.city import City
+from models.place import Place
+from models.amenity import Amenity
+from models.review import Review
+
 
 
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
-    valid_classes = ['BaseModel', 'User']  # Add 'User' to the list of valid classes
+    valid_classes = ['BaseModel', 'User', 'State', 'City', 'Amenity', 'Place', 'Review']
 
     def do_create(self, arg):
         """Create a new instance of a class"""
@@ -98,41 +104,34 @@ class HBNBCommand(cmd.Cmd):
             return
         attribute = arg[2]
         value = arg[3]
-        obj = all_objs[key]
-        setattr(obj, attribute, value)
-        obj.save()
+        setattr(all_objs[key], attribute, value)
+        all_objs[key].save()
 
     def do_all(self, arg):
-        """Print all string representations of all instances"""
-        all_objs = storage.all()
-        print([str(obj) for obj in all_objs.values()])
-
+        """Print all instances of a class or all classes"""
+        arg = arg.split()
+        if len(arg) == 0:
+            all_objs = storage.all()
+            print([str(obj) for obj in all_objs.values()])
+        elif arg[0] in self.valid_classes:
+            class_name = arg[0]
+            all_objs = storage.all(class_name)
+            print([str(obj) for obj in all_objs.values()])
+        else:
+            print("** class doesn't exist **")
 
     def do_quit(self, arg):
-        """Quit command to exit the program"""
+        """Quit the console"""
         return True
 
     def do_EOF(self, arg):
-        """Quit command to exit the program"""
-        print("")
+        """Quit the console using EOF (Ctrl+D)"""
+        print()
         return True
 
     def emptyline(self):
         """Do nothing when an empty line is entered"""
         pass
-
-    def postloop(self):
-        """Print a new line after exiting the command interpreter"""
-        print()
-
-    def do_help(self, arg):
-        """Help command to display available commands"""
-        if arg:
-            cmd.Cmd.do_help(self, arg)
-        else:
-            print("Documented commands (type help <topic>):")
-            print("- quit: Quit the program")
-            print("- help: Display available commands")
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
