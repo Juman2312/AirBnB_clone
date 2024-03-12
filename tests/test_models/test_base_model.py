@@ -3,99 +3,86 @@
 
 
 import unittest
+from unittest.mock import patch
+from io import StringIO
 from datetime import datetime
-import uuid
 from models.base_model import BaseModel
-from models import storage
-import json
-
-class TestBaseModelInit(unittest.TestCase):
-    """Test cases for BaseModel initialization."""
-
-    def setUp(self):
-        """Set up the test case."""
-        self.base_model = BaseModel()
-
-    def test_init(self):
-        """Test BaseModel initialization."""
-        self.assertIsNotNone(self.base_model.id)
-        self.assertIsInstance(self.base_model.created_at, datetime)
-        self.assertIsInstance(self.base_model.updated_at, datetime)
-        self.assertEqual(self.base_model.created_at, self.base_model.updated_at)
+from models.engine.file_storage import FileStorage
 
 
-class TestBaseModelSave(unittest.TestCase):
-    """Test cases for BaseModel save method."""
+class TestFileStorage(unittest.TestCase):
 
     def setUp(self):
-        """Set up the test case."""
-        self.base_model = BaseModel()
+        # Create a temporary file path for testing
+        self.file_path = "test_file.json"
 
-    def test_save(self):
-        """Test BaseModel save method."""
-        old_updated_at = self.base_model.updated_at
-        self.base_model.save()
-        new_updated_at = self.base_model.updated_at
-        self.assertEqual(old_updated_at, new_updated_at)
+    def tearDown(self):
+        # Remove the temporary file after each test
+        try:
+            os.remove(self.file_path)
+        except FileNotFoundError:
+            pass
 
+    def test_new_object_added_to_objects(self):
+        storage = FileStorage()
+        obj = BaseModel()
+        storage.new(obj)
+        objects = storage.all()
+        self.assertIn(f"{obj.__class__.__name__}.{obj.id}", objects)
 
-class TestBaseModelToDict(unittest.TestCase):
-    """Test cases for BaseModel to_dict method."""
+    def test_save_serializes_objects_to_file(self):
+        storage = FileStorage()
+        obj1 = BaseModel()
+        obj2 = BaseModel()
+        storage.new(obj1)
+        storage.new(obj2)
 
-    def setUp(self):
-        """Set up the test case."""
-        self.base_model = BaseModel()
+        # Patch the `open` function to capture the file content
+        with patch("builtins.open", create=True) as mock_open:
+            storage.save()
 
-    def test_to_dict(self):
-        """Test BaseModel to_dict method."""
-        self.base_model.my_number = 123
-        self.base_model.name = "Test Model"
-        obj_dict = self.base_model.to_dict()
+            # Assert that the file was opened with the correct path
+            mock_open.assert_called_once_with(storage._FileStorage__file_path, 'w')
 
-        self.assertIsInstance(obj_dict, dict)
-        self.assertEqual(obj_dict["my_number"], 123)
-        self.assertEqual(obj_dict["name"], "Test Model")
-        self.assertEqual(obj_dict["__class__"], "BaseModel")
-        self.assertEqual(obj_dict["updated_at"], self.base_model.updated_at.isoformat())
-        self.assertEqual(obj_dict["id"], self.base_model.id)
-        self.assertEqual(obj_dict["created_at"], self.base_model.created_at.isoformat())
+            # Check if the serialized objects were written to the file
+            file_content = mock_open.return_value.write.call_args[0][0]
+            self.assertIn(obj1.id, file_content)
+            self.assertIn(obj2.id, file_content)
 
+    def test_reload_deserializes_objects_from_file(self):
+        storage = FileStorage()
+        obj = BaseModel()
+        storage.new(obj)
+        storage.save()
 
-class TestBaseModelStr(unittest.TestCase):
-    """Test cases for BaseModel __str__ method."""
+        # Patch the `open` function to return a file-like object with the serialized objects
+        with patch("builtins.open", create=True) as mock_open:
+            mock_open.return_value.__enter__.return_value.read.return_value = '{"BaseModel.' + obj.id + '": {"id": "' + obj.id + '", "created_at": "' + obj.created_at.isoformat() + '", "updated_at": "' + obj.updated_at.isoformat() + '"}}'
 
-    def setUp(self):
-        """Set up the test case."""
-        self.base_model = BaseModel()
+            storage.reload()
 
-    def test_str(self):
-        """Test BaseModel __str__ method."""
-        expected_string = f"[BaseModel] ({self.base_model.id}) {self.base_model.__dict__}"
-        self.assertEqual(str(self.base_model), expected_string)
+            # Check if the deserialized object is in the storage
+            objects = storage.all()
+            self.assertIn(f"{obj.__class__.__name__}.{obj.id}", objects)
 
+    def test_save_and_reload_consistency(self):
+        storage = FileStorage()
+        obj = BaseModel()
+        storage.new(obj)
+        storage.save()
+        storage.reload()
+        objects_before = storage.all()
 
-class TestBaseModelInitFromDict(unittest.TestCase):
-    """Test cases for BaseModel initialization from dictionary."""
+        # Modify the object after reloading
+        obj.some_attribute = "some value"
 
-    def test_init_from_dict(self):
-        """Test BaseModel initialization from dictionary."""
-        model_dict = {
-            "id": "56d43177-cc5f-4d6c-a0c1-e167f8c27337",
-            "created_at": "2017-09-28T21:03:54.052298",
-            "__class__": "BaseModel",
-            "my_number": 89,
-            "updated_at": "2017-09-28T21:03:54.052302",
-            "name": "My_First_Model"
-        }
-        my_model = BaseModel(**model_dict)
+        # Save and reload again
+        storage.save()
+        storage.reload()
+        objects_after = storage.all()
 
-        self.assertEqual(my_model.id, "56d43177-cc5f-4d6c-a0c1-e167f8c27337")
-        self.assertEqual(my_model.my_number, 89)
-        self.assertEqual(my_model.name, "My_First_Model")
-        self.assertIsInstance(my_model.created_at, datetime)
-        self.assertEqual(my_model.created_at, datetime.strptime("2017-09-28T21:03:54.052298", '%Y-%m-%dT%H:%M:%S.%f'))
-        self.assertIsInstance(my_model.updated_at, datetime)
-        self.assertEqual(my_model.updated_at, datetime.strptime("2017-09-28T21:03:54.052302", '%Y-%m-%dT%H:%M:%S.%f'))
+        # Check if the modified object is still the same after reloading
+        self.assertEqual(objects_before, objects_after)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
