@@ -1,7 +1,13 @@
+#!/usr/bin/env python3
+""" unittest for base model """
+
+
 import unittest
 from datetime import datetime
 import uuid
 from models.base_model import BaseModel
+from models import storage
+import json
 
 class TestBaseModelInit(unittest.TestCase):
     """Test cases for BaseModel initialization."""
