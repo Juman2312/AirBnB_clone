@@ -1,9 +1,22 @@
 #!/usr/bin/python3
+
+"""
+This file defines the storage system for
+the project.
+It will use JSON format to either serialize and deserialize objects
+"""
+
 import json
 
+
 class FileStorage:
-    __file_path = "file.json"
-    __objects = {}
+    """
+        This is  will serve as an Object relation mappingto interface or database
+    """
+
+    """class private varaibles"""
+    __file_path: str = "file.json"
+    __objects: dict = {}
 
     def all(self):
         """Returns the dictionary __objects"""
