@@ -21,6 +21,7 @@ class HBNBCommand(cmd.Cmd):
     Attributes:
         prompt (str): The command prompt.
     """
+
     prompt = "(hbnb) "
     valid_classes = ['BaseModel', 'User', 'State', 'City', 'Amenity', 'Place', 'Review']
 
