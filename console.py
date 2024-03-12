@@ -6,6 +6,7 @@ which is the entry point of the Airbnb Project
 
 import cmd
 
+
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
 
@@ -15,6 +16,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_EOF(self, arg):
         """Quit command to exit the program"""
+        print("")
         return True
 
     def emptyline(self):
@@ -26,7 +28,7 @@ class HBNBCommand(cmd.Cmd):
         if arg:
             cmd.Cmd.do_help(self, arg)
         else:
-            print("Available commands:")
+            print("Documented commands (type help <topic>):")
             print("- quit: Quit the program")
             print("- help: Display available commands")
 
